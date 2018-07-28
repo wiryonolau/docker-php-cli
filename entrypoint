@@ -1,0 +1,9 @@
+#!/bin/bash
+echo "USER_ID=$USER_ID"
+echo "GIT_SSL_VERIFY=$GIT_SSL_VERIFY"
+
+useradd --shell /bin/bash -u $USER_ID -o -c "" -m user
+usermod -aG $USER_ID apache
+gosu $USER_ID git config --global http.sslverify $GIT_SSL_VERIFY
+
+exec "$@"

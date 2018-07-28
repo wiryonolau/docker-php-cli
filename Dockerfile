@@ -1,5 +1,8 @@
 FROM centos:7
 
+ENV USER_ID=1000 \ 
+    GIT_SSL_VERIFY=false
+
 RUN rpm --import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 \
     && rpm --import https://repo.webtatic.com/yum/RPM-GPG-KEY-webtatic-el7 \
     && rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
@@ -22,10 +25,8 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364
     && yum clean all \
     && rm -rf /var/cache/yum/*
 
-ENV USER_ID=1000 \ 
-    GIT_SSL_VERIFY=false
+COPY entrypoint /
+RUN chmod 755 /entrypoint
 
-RUN useradd --shell /bin/bash -u $USER_ID -o -c "" -m user \
-    && gosu $USER_ID git config --global http.sslverify $GIT_SSL_VERIFY
-
-ENTRYPOINT ["php", "-a"]
+ENTRYPOINT ["/entrypoint"]
+CMD ["php", "-a"]
